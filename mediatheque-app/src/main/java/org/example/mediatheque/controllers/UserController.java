@@ -1,43 +1,49 @@
-package org.example.mediatheque.Controllers;
+package org.example.mediatheque.controllers;
 
-import org.example.mediatheque.Database.UserRepository;
-import org.example.mediatheque.Models.User;
+import org.example.mediatheque.database.UserRepository;
+import org.example.mediatheque.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 public class UserController{
-
     @Autowired
     private UserRepository userRepository;
     @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         // Here you would typically save the user to a database
         // For this example, we will just return the user object
-        userRepository.save(user);
-        return user;
+        if (user.uid == null) {
+            user.uid = UUID.randomUUID();
+        }
+        return ResponseEntity.ok(userRepository.save(user));
     }
 
-    @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable String id) {
+    @GetMapping("/users")
+    public User getUserById(@RequestParam String uid) {
         // Here you would typically retrieve the user from a database
         // For this example, we will just return a dummy user
-        return userRepository.findById(Integer.parseInt(id));
+        return userRepository.findByUid(UUID.fromString(uid));
     }
 
-    @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable String id, @RequestBody User user) {
+    @PutMapping("/users")
+    public User updateUser(@RequestParam String uuid, @RequestBody User user) {
         // Here you would typically update the user in a database
         // For this example, we will just return the updated user object
+        if (user.uid == null) {
+            user.uid = UUID.fromString(uuid);
+        }
         return userRepository.save(user);
     }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteUser(@RequestParam String uuid) {
         // Here you would typically delete the user from a database
         // For this example, we will just return a 204 No Content response
-        userRepository.deleteById(Integer.parseInt(id));
+        userRepository.deleteByUid(UUID.fromString(uuid));
         return ResponseEntity.noContent().build();
     }
 }
