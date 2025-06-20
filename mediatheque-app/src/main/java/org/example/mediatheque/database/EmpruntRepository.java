@@ -14,6 +14,6 @@ public interface EmpruntRepository extends JpaRepository<Emprunt, UUID> {
     public void deleteByUid(UUID uid);
     public Emprunt findByUserAndResource(User user, Resource resource);
     public Emprunt findByResourceUid(UUID resourceUid);
-    public Emprunt findByUserUid(UUID userUid);
+    public List<Emprunt> findByUserUid(UUID userUid);
     public List<Emprunt> findAll();
 }

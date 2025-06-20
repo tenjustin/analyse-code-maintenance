@@ -7,15 +7,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 @RestController()
 public class ResourceController {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    Logger logger = Logger.getLogger(ResourceController.class.getName());
+
     @GetMapping("/resources/getAll")
     public List<Resource> getAllResources() {
         // This method retrieves all resources from the database
+        logger.info("Retrieving all resources");
         return resourceRepository.findAll();
     }
 
@@ -25,6 +30,7 @@ public class ResourceController {
         if (resource.uid == null) {
             resource.uid = UUID.randomUUID();
         }
+        logger.info(String.format("Creating resource with uid : %s", resource.uid));
         return resourceRepository.save(resource);
     }
 
@@ -34,18 +40,21 @@ public class ResourceController {
         if (resource.uid == null) {
             resource.uid = UUID.fromString(uid);
         }
+        logger.info(String.format("Updating resource with uid : %s", uid));
         return resourceRepository.save(resource);
     }
 
     @DeleteMapping("/resources")
     public void deleteResource(@RequestParam String uid) {
         // This method deletes a resource from the database by its ID
+        logger.info(String.format("Deleting resource with uid : %s", uid));
         resourceRepository.deleteById(UUID.fromString(uid));
     }
 
     @GetMapping("/resources")
     public Resource getResourceById(@RequestParam String uid) {
         // This method retrieves a resource by its ID
+        logger.info(String.format("Retrieving resource with uid : %s", uid));
         return resourceRepository.findById(UUID.fromString(uid)).orElse(null);
     }
 }
